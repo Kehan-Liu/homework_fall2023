@@ -6,7 +6,7 @@ from cs285.agents.pg_agent import PGAgent
 import os
 import time
 
-import gym
+import gymnasium as gym
 import numpy as np
 import torch
 from cs285.infrastructure import pytorch_util as ptu
@@ -27,12 +27,14 @@ def run_training_loop(args):
     ptu.init_gpu(use_gpu=not args.no_gpu, gpu_id=args.which_gpu)
 
     # make the gym environment
-    env = gym.make(args.env_name, render_mode=None)
+    env = gym.make(args.env_name, render_mode="rgb_array")
     discrete = isinstance(env.action_space, gym.spaces.Discrete)
 
     # add action noise, if needed
     if args.action_noise_std > 0:
-        assert not discrete, f"Cannot use --action_noise_std for discrete environment {args.env_name}"
+        assert (
+            not discrete
+        ), f"Cannot use --action_noise_std for discrete environment {args.env_name}"
         env = ActionNoiseWrapper(env, args.seed, args.action_noise_std)
 
     max_ep_len = args.ep_len or env.spec.max_episode_steps
@@ -68,17 +70,22 @@ def run_training_loop(args):
 
     for itr in range(args.n_iter):
         print(f"\n********** Iteration {itr} ************")
-        # TODO: sample `args.batch_size` transitions using utils.sample_trajectories
-        # make sure to use `max_ep_len`
-        trajs, envsteps_this_batch = None, None  # TODO
+
+        trajs, envsteps_this_batch = utils.sample_trajectories(
+            env, agent.actor, args.batch_size, max_ep_len
+        )
         total_envsteps += envsteps_this_batch
 
         # trajs should be a list of dictionaries of NumPy arrays, where each dictionary corresponds to a trajectory.
         # this line converts this into a single dictionary of lists of NumPy arrays.
         trajs_dict = {k: [traj[k] for traj in trajs] for k in trajs[0]}
 
-        # TODO: train the agent using the sampled trajectories and the agent's update function
-        train_info: dict = None
+        train_info: dict = agent.update(
+            trajs_dict["observation"],
+            trajs_dict["action"],
+            trajs_dict["reward"],
+            trajs_dict["terminal"],
+        )
 
         if itr % args.scalar_log_freq == 0:
             # save eval metrics
