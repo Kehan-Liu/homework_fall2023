@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
-import gym
-from gym.wrappers.record_episode_statistics import RecordEpisodeStatistics
+import gymnasium as gym
+from gymnasium.wrappers import RecordEpisodeStatistics
 
 import numpy as np
 import torch
@@ -10,6 +10,7 @@ import torch.nn as nn
 from cs285.env_configs.dqn_config import basic_dqn_config
 import cs285.infrastructure.pytorch_util as ptu
 from cs285.networks.mlp_policy import MLPPolicy
+
 
 def awac_config(
     total_steps: int = 50000,
@@ -27,7 +28,9 @@ def awac_config(
         n_layers=actor_num_layers,
         layer_size=actor_hidden_size,
     )
-    make_actor_optimizer = lambda params: torch.optim.Adam(params, lr=actor_learning_rate)
+    make_actor_optimizer = lambda params: torch.optim.Adam(
+        params, lr=actor_learning_rate
+    )
 
     config = basic_dqn_config(total_steps=total_steps, discount=discount, **kwargs)
     config["log_name"] = "{env_name}_awac{temperature}".format(

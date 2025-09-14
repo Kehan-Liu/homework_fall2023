@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
-import gym
-from gym.wrappers.record_episode_statistics import RecordEpisodeStatistics
+import gymnasium as gym
+from gymnasium.wrappers import RecordEpisodeStatistics
 
 import numpy as np
 import torch
@@ -9,6 +9,7 @@ import torch.nn as nn
 
 from cs285.env_configs.dqn_config import basic_dqn_config
 import cs285.infrastructure.pytorch_util as ptu
+
 
 def cql_config(
     cql_alpha: float = 1.0,

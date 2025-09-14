@@ -7,8 +7,8 @@ import cs285.env_configs
 import os
 import time
 
-import gym
-from gym import wrappers
+import gymnasium as gym
+from gymnasium import wrappers
 import numpy as np
 import torch
 from cs285.infrastructure import pytorch_util as ptu
@@ -61,9 +61,7 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
         stacked_frames = True
         frame_history_len = env.observation_space.shape[0]
         assert frame_history_len == 4, "only support 4 stacked frames"
-        replay_buffer = MemoryEfficientReplayBuffer(
-            frame_history_len=frame_history_len
-        )
+        replay_buffer = MemoryEfficientReplayBuffer(frame_history_len=frame_history_len)
     elif len(env.observation_space.shape) == 1:
         stacked_frames = False
         replay_buffer = ReplayBuffer()
@@ -75,7 +73,7 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
     def reset_env_training():
         nonlocal observation
 
-        observation = env.reset()
+        observation, _ = env.reset()
 
         assert not isinstance(
             observation, tuple
@@ -89,23 +87,21 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
 
     for step in tqdm.trange(config["total_steps"], dynamic_ncols=True):
         epsilon = exploration_schedule.value(step)
-        
-        # TODO(student): Compute action
-        action = ...
 
-        # TODO(student): Step the environment
+        action = agent.get_action(observation, epsilon)
 
+        next_observation, reward, done, _, info = env.step(action)
         next_observation = np.asarray(next_observation)
         truncated = info.get("TimeLimit.truncated", False)
+        done = False if truncated else done
 
-        # TODO(student): Add the data to the replay buffer
         if isinstance(replay_buffer, MemoryEfficientReplayBuffer):
             # We're using the memory-efficient replay buffer,
             # so we only insert next_observation (not observation)
-            ...
+            replay_buffer.insert(action, reward, next_observation[-1], done)
         else:
             # We're using the regular replay buffer
-            ...
+            replay_buffer.insert(observation, action, reward, next_observation, done)
 
         # Handle episode termination
         if done:
@@ -118,14 +114,12 @@ def run_training_loop(config: dict, logger: Logger, args: argparse.Namespace):
 
         # Main DQN training loop
         if step >= config["learning_starts"]:
-            # TODO(student): Sample config["batch_size"] samples from the replay buffer
-            batch = ...
+            batch = replay_buffer.sample(config["batch_size"])
 
             # Convert to PyTorch tensors
             batch = ptu.from_numpy(batch)
 
-            # TODO(student): Train the agent. `batch` is a dictionary of numpy arrays,
-            update_info = ...
+            update_info = agent.update(*batch.values(), step)
 
             # Logging code
             update_info["epsilon"] = epsilon

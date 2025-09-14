@@ -2,7 +2,7 @@ from collections import OrderedDict
 import numpy as np
 import copy
 from cs285.networks.mlp_policy import MLPPolicy
-import gym
+import gymnasium as gym
 import cv2
 from cs285.infrastructure import pytorch_util as ptu
 from typing import Dict, Tuple, List
@@ -26,7 +26,7 @@ def sample_trajectory(
                 img = env.sim.render(camera_name="track", height=500, width=500)[::-1]
             else:
                 img = env.render(mode="rgb_array")
-            
+
             if isinstance(img, list):
                 img = img[0]
 

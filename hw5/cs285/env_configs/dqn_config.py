@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
-import gym
-from gym.wrappers.record_episode_statistics import RecordEpisodeStatistics
+import gymnasium as gym
+from gymnasium.wrappers import RecordEpisodeStatistics
 
 import numpy as np
 import torch
@@ -9,6 +9,7 @@ import torch.nn as nn
 
 from cs285.env_configs.schedule import ConstantSchedule
 import cs285.infrastructure.pytorch_util as ptu
+
 
 def basic_dqn_config(
     env_name: str,
@@ -40,9 +41,7 @@ def basic_dqn_config(
     ) -> torch.optim.lr_scheduler._LRScheduler:
         return torch.optim.lr_scheduler.ConstantLR(optimizer, factor=1.0)
 
-    exploration_schedule = ConstantSchedule(
-        0.3
-    )
+    exploration_schedule = ConstantSchedule(0.3)
 
     def make_env():
         return RecordEpisodeStatistics(gym.make(env_name), 100)

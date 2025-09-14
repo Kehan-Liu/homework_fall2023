@@ -1,6 +1,6 @@
 from typing import Tuple, Optional
 
-import gym
+import gymnasium as gym
 
 import numpy as np
 import torch
@@ -10,9 +10,9 @@ from cs285.networks.mlp_policy import MLPPolicy
 from cs285.networks.state_action_value_critic import StateActionCritic
 import cs285.infrastructure.pytorch_util as ptu
 
-from gym.wrappers.rescale_action import RescaleAction
-from gym.wrappers.clip_action import ClipAction
-from gym.wrappers.record_episode_statistics import RecordEpisodeStatistics
+from gymnasium.wrappers import RescaleAction
+from gymnasium.wrappers import ClipAction
+from gymnasium.wrappers import RecordEpisodeStatistics
 
 
 def sac_config(
@@ -103,12 +103,12 @@ def sac_config(
             "use_entropy_bonus": use_entropy_bonus,
             "backup_entropy": backup_entropy,
             "temperature": temperature,
-            "target_update_period": target_update_period
-            if not use_soft_target_update
-            else None,
-            "soft_target_update_rate": soft_target_update_rate
-            if use_soft_target_update
-            else None,
+            "target_update_period": (
+                target_update_period if not use_soft_target_update else None
+            ),
+            "soft_target_update_rate": (
+                soft_target_update_rate if use_soft_target_update else None
+            ),
         },
         "num_agent_train_steps_per_iter": num_agent_train_steps_per_iter,
         "batch_size": batch_size,

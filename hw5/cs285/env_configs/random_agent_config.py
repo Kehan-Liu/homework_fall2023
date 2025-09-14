@@ -1,17 +1,12 @@
-import gym
-from gym.wrappers.record_episode_statistics import RecordEpisodeStatistics
-from gym.wrappers.time_limit import TimeLimit
+import gymnasium as gym
+from gymnasium.wrappers import RecordEpisodeStatistics
+from gymnasium.wrappers import TimeLimit
 
 from typing import Optional
 
-def random_agent_config(
-    env_name: str,
-    exp_name: Optional[str] = None,
-    **kwargs
-):
-    log_string = "{env_name}_random".format(
-        env_name=env_name
-    )
+
+def random_agent_config(env_name: str, exp_name: Optional[str] = None, **kwargs):
+    log_string = "{env_name}_random".format(env_name=env_name)
 
     return {
         "agent": "random",
