@@ -2,7 +2,7 @@ from collections import OrderedDict
 import numpy as np
 import copy
 from cs285.networks.mlp_policy import MLPPolicy
-import gymnasium as gym
+import gym
 import cv2
 from cs285.infrastructure import pytorch_util as ptu
 from typing import Dict, Tuple, List
@@ -44,7 +44,7 @@ def sample_trajectory(
 
         ac = policy.get_action(ob)
 
-        next_ob, rew, done, info = env.step(ac)
+        next_ob, rew, done, _, info = env.step(ac)
 
         steps += 1
         # only record a "done" into the replay buffer if not truncated

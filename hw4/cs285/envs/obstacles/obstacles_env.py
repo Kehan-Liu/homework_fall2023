@@ -1,6 +1,6 @@
-import gymnasium as gym
+import gym
 import numpy as np
-from gymnasium import spaces
+from gym import spaces
 
 
 class Obstacles(gym.Env):
@@ -156,7 +156,7 @@ class Obstacles(gym.Env):
         score = self.get_score(ob)
         env_info = {"ob": ob, "rewards": self.reward_dict, "score": score}
 
-        return ob, reward, done, env_info
+        return ob, reward, done, False, env_info
 
     ########################################
     # utility functions

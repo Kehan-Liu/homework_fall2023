@@ -1,5 +1,5 @@
 import numpy as np
-from gymnasium import utils
+from gym import utils
 from gym.envs.mujoco import mujoco_env
 from gym.spaces import Box
 
@@ -114,7 +114,7 @@ class HalfCheetahEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             "rewards": self.reward_dict,
             "score": score,
         }
-        return ob, rew, done, env_info
+        return ob, rew, done, False, env_info
 
     def _get_obs(self):
         self.obs_dict = {}
@@ -137,7 +137,9 @@ class HalfCheetahEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.reset_pose = self.init_qpos + self.np_random.uniform(
             low=-0.1, high=0.1, size=self.model.nq
         )
-        self.reset_vel = self.init_qvel + self.np_random.randn(self.model.nv) * 0.1
+        self.reset_vel = (
+            self.init_qvel + self.np_random.standard_normal(self.model.nv) * 0.1
+        )
 
         # reset the env to that pose/vel
         return self.do_reset(self.reset_pose.copy(), self.reset_vel.copy())

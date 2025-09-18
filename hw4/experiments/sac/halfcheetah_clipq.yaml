@@ -17,5 +17,4 @@ use_entropy_bonus: true
 temperature: 0.05
 
 num_agent_train_steps_per_iter: 5000
-batch_size: 1500
 mbpo_rollout_length: 0

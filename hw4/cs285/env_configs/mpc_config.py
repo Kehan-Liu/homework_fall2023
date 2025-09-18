@@ -1,7 +1,7 @@
 import torch.nn as nn
 from cs285.infrastructure import pytorch_util as ptu
-from gymnasium.wrappers import RecordEpisodeStatistics
-import gymnasium as gym
+from gym.wrappers import RecordEpisodeStatistics
+import gym
 import torch
 from typing import Optional
 
@@ -48,7 +48,7 @@ def mpc_config(
 
     def make_env(render: bool = False):
         return RecordEpisodeStatistics(
-            gym.make(env_name, render_mode="single_rgb_array" if render else None),
+            gym.make(env_name, render_mode="rgb_array" if render else None),
         )
 
     log_string = f"{env_name}_{exp_name}_l{num_layers}_h{hidden_size}_mpc{mpc_strategy}_horizon{mpc_horizon}_actionseq{mpc_num_action_sequences}"

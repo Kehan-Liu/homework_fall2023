@@ -1,5 +1,5 @@
 import numpy as np
-from gymnasium import utils
+from gym import utils
 from gym.envs.mujoco import mujoco_env
 import os
 from gym.spaces import Box
